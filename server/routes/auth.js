@@ -11,6 +11,10 @@ const jwt = require("jsonwebtoken");
  */
 const User = require('../models/User');
 module.exports = function (server) {
+
+    /**
+     * Login
+     */
     server.post("/login", (req, res, next) => {
         // On récupère l'utilisateur via son email
         User.findOne({ email: req.body.email }, (err, doc) => {
@@ -36,6 +40,9 @@ module.exports = function (server) {
         })
     });
 
+    /**
+     * Création de compte
+     */
     server.post("/register", (req, res, next) => {
         const body = req.body;
 
