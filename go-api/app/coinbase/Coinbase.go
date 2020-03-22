@@ -1,12 +1,15 @@
 package coinbase
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -48,6 +51,50 @@ func getAddress(pathUrl string) *CoinbaseAddress {
 	coinbaseAddress := new(CoinbaseAddress)
 	json.Unmarshal(body, coinbaseAddress)
 	return coinbaseAddress
+}
+
+func Withdraw(currency string, addrDest string, amount float64) *WithdrawResponse {
+	pathUrl := "/accounts/" + getAccountId(currency) + "/transactions"
+
+	data := url.Values{}
+	data.Set("type", "send")
+	data.Set("to", addrDest)
+	data.Set("amount", fmt.Sprintf("%f", amount))
+	data.Set("currency", currency)
+
+	req, err := http.NewRequest("POST", API_ENDPOINT+"/"+API_COINBASE_VERSION+pathUrl, bytes.NewBufferString(data.Encode()))
+
+	if err != nil {
+		return nil
+	}
+
+	addHeaders(req, bytes.NewBufferString(data.Encode()).String(), pathUrl, "POST")
+	client := new(http.Client)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil
+	}
+
+	withdrawResponse := new(WithdrawResponse)
+	json.Unmarshal(body, withdrawResponse)
+	return withdrawResponse
+}
+
+func getAccountId(currency string) string {
+	if currency == "USDC" {
+		return USDCAccount
+	}
+
+	if currency == "DAI" {
+		return DAIAccount
+	}
+
+	return ""
 }
 
 func addHeaders(req *http.Request, bodyJson string, url string, method string) {
