@@ -7,15 +7,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"strconv"
+	"sync"
 )
 
+var mux sync.Mutex
+
 func ReceiveNotification(c echo.Context) error {
+	mux.Lock()
+	defer mux.Unlock()
+
 	notification := new(Notification)
 	if err := c.Bind(notification); err != nil {
 		return c.NoContent(400)
 	}
 
 	// TODO check coinbase notification origin
+	if notification.Type == "ping" {
+		return c.NoContent(200)
+	}
 
 	if notification.Type != "wallet:deposit:completed" {
 		// On ignore pour l'instance
@@ -41,8 +50,9 @@ func ReceiveNotification(c echo.Context) error {
 		if wc.Address == notification.Data.Address && wc.Currency == notification.AdditionalData.Amount.Currency {
 			wc.AvailableAmount += amountFloat
 			wc.Amount += amountFloat
+			ca.TotalAmount += amountFloat
 
-			cagnotte.GetCagnottesCollection().UpdateOne(context.Background(), bson.M{"_id": bson.M{"$eq": ca.ID}}, bson.M{"$set": bson.M{"wallets": ca.Wallets}})
+			cagnotte.GetCagnottesCollection().UpdateOne(context.Background(), bson.M{"_id": bson.M{"$eq": ca.ID}}, bson.M{"$set": bson.M{"wallets": ca.Wallets, "totalAmount": ca.TotalAmount}})
 			break
 		}
 	}

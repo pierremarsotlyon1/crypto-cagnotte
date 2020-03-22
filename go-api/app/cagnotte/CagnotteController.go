@@ -47,6 +47,7 @@ func Add(c echo.Context) error {
 	cagnotte.Name = addCagnotte.Name
 	cagnotte.Status = 1
 	cagnotte.Creator = oid
+	cagnotte.TotalAmount = 0
 
 	// Création des addresses sur l'exchange
 	if addCagnotte.UseUSDCWallet {
@@ -141,6 +142,7 @@ func Close(c echo.Context) error {
 	return c.NoContent(200)
 }
 
+// Withdraw - Permet de demander un versement sur un / des wallet(s)
 func Withdraw(c echo.Context) error {
 	askWithdraw := new(AskWithdraw)
 	if err := c.Bind(askWithdraw); err != nil {

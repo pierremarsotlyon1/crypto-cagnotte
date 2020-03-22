@@ -14,6 +14,7 @@ type Cagnotte struct {
 	Days        int16                       `json:"days" bson:"days"`
 	Status      int8                        `json:"status" bson:"status"`
 	Withdraws   []coinbase.WithdrawResponse `json:"withdraws" bson:"withdraws"`
+	TotalAmount float64                     `json:"totalAmount" bson:"totalAmount"`
 }
 
 func (cagnotte *Cagnotte) IsValid() bool {
