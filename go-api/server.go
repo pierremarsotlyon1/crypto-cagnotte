@@ -23,6 +23,7 @@ func main() {
 
 	cagnottesApi := apiGroup.Group("/cagnottes")
 	cagnottesApi.POST("", cagnotte.Add)
+	cagnottesApi.GET("/:id", cagnotte.Get)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

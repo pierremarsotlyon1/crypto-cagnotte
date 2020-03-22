@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"crypto-cagnotte/go-api/app"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -108,7 +107,6 @@ func Login(c echo.Context) error {
 		})
 	}
 
-	fmt.Println(user.ID.Hex())
 	token, err := generateJwtToken(user.ID.Hex())
 	if err != nil {
 		return c.JSON(400, map[string]string{
