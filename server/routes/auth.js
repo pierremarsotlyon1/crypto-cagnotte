@@ -4,18 +4,21 @@
 const errors = require('restify-errors');
 const bcrypt = require("bcryptjs")
 const SALT = 10;
-const JWT_SECRET = "cagnotte_jwt_secret_pMFK7369IJKSQB198U247YAZHYDOZEIAGFB";
 const jwt = require("jsonwebtoken");
+const config = require('../config');
+
 /**
  * Model Schema
  */
 const User = require('../models/User');
-module.exports = function (server) {
 
-    /**
-     * Login
-     */
-    server.post("/login", (req, res, next) => {
+export default class AuthController {
+    constructor(server) {
+        server.post("/login", this.login);
+        server.post("/register", this.register);
+    }
+
+    login = (req, res, next) => {
         // On récupère l'utilisateur via son email
         User.findOne({ email: req.body.email }, (err, doc) => {
             if (err) {
@@ -33,17 +36,14 @@ module.exports = function (server) {
                     return next(new errors.InternalError("Le mot de passe ne correspond pas"));
                 }
 
-                const token = jwt.sign({ data: doc._id }, JWT_SECRET);
+                const token = jwt.sign({ data: doc._id }, config.jwt_key.secret);
                 res.send(200, token);
                 next();
             })
         })
-    });
+    };
 
-    /**
-     * Création de compte
-     */
-    server.post("/register", (req, res, next) => {
+    register = (req, res, next) => {
         const body = req.body;
 
         if (body.password !== body.confirmPassword) {
@@ -73,11 +73,11 @@ module.exports = function (server) {
                         return next(new errors.InternalError(err.message));
                     }
 
-                    const token = jwt.sign({ data: user._id }, JWT_SECRET);
+                    const token = jwt.sign({ data: user._id }, config.jwt_key.secret);
                     res.send(201, token);
                     next();
                 });
             });
         })
-    });
-};
+    };
+}

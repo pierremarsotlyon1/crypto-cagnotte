@@ -21,18 +21,19 @@ const CagnotteSchema = new mongoose.Schema(
         creator: {
             type: mongoose.ObjectId,
             required: true,
+            ref:'Users'
         },
         days: {
             type: Number,
             required: true,
         },
         versements: {
-            type: [Versement],
+            type: [Versement.schema],
         }
     },
     { minimize: false },
 );
 CagnotteSchema.plugin(timestamps);
 CagnotteSchema.plugin(mongooseStringQuery);
-const Cagnotte = mongoose.model('Cagnotte', CagnotteSchema);
+const Cagnotte = mongoose.model('Cagnottes', CagnotteSchema);
 module.exports = Cagnotte;

@@ -6,6 +6,7 @@ const VersementSchema = new mongoose.Schema(
         cagnotte: {
             type: mongoose.ObjectId,
             required: true,
+            ref:'Cagnottes'
         },
         total: {
             type: Number,
@@ -16,5 +17,5 @@ const VersementSchema = new mongoose.Schema(
 );
 VersementSchema.plugin(timestamps);
 VersementSchema.plugin(mongooseStringQuery);
-const Versement = mongoose.model('Versement', VersementSchema);
+const Versement = mongoose.model('Versements', VersementSchema);
 module.exports = Versement;

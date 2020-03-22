@@ -6,4 +6,7 @@ module.exports = {
     db: {
         uri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cagnotte',
     },
+    jwt_key: {
+        secret: "cagnotte_jwt_secret_pMFK7369IJKSQB198U247YAZHYDOZEIAGFB"
+    }
 };
